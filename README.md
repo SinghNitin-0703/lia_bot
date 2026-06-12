@@ -17,10 +17,17 @@ Welcome to the **Gluzo AI Assistant** repository! This is a state-of-the-art, fu
     *   **Short-Term Memory:** Retains the recent chat history within the active session for seamless conversation continuity.
     *   **Contextual Upselling:** Proactively analyzes the user's active cart to recommend complementary products.
 *   **Multimodal Capabilities:**
-    *   **Voice-to-Text:** Multilingual audio transcription using Deepgram.
-    *   **Image Extraction:** Document and image-to-text capabilities powered by Azure Mistral.
+    *   **Voice-to-Text:** Multilingual audio transcription using Deepgram (Model: `nova-2`).
+    *   **Image Extraction:** Document and image-to-text capabilities powered by Azure OpenAI Vision (Model: `gpt-4.1-mini-2`).
 *   **RAG (Retrieval-Augmented Generation):**
     *   Uses **ChromaDB** for efficient vector storage and semantic retrieval of the product catalog.
+
+## 🧰 Agent Tools & Capabilities
+
+The agents are equipped with specialized tools to perform real-world actions:
+*   **External Search Tool (Tavily):** Researches competitor products online to extract their active ingredients and automatically finds the best alternative in our catalog based on ingredient overlap.
+*   **Product Search Tools:** Queries the internal vector database and SQL catalog to find products matching specific concerns, apply budget math, and strictly filter out allergens.
+*   **Customer Support Tools:** Interfaces with the backend to check order statuses, process returns, verify inventory, provide shipping estimates, and gracefully escalate issues to a human agent.
 
 ## 🏗️ Architecture
 
