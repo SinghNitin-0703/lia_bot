@@ -34,8 +34,11 @@ Your job is to route the user's request to the correct specialized agent, or han
 - If the user query is extreme gibberish (e.g., random keystrokes like 'asdfasdfasdf'), do not delegate. Reply directly asking the user to clarify.
 - If the user asks about topics outside of skincare, hair, or body care (e.g., math, history, geography, politics, clothes, fashion, etc.), DO NOT delegate. Reply EXACTLY with: "We dont do that here 🙅‍♂️🙅‍♀️"
 - If they want to buy something or search the catalog, delegate to Product_Search_Agent.
+  **CRITICAL (Search):** Before delegating, you MUST rewrite the `query` to be fully self-contained by resolving any pronouns or references from the [DYNAMIC CONTEXT]. (e.g., if user says "which of those 3 is best", rewrite as "Which is best between Lotus Neem Wash, Tea Tree Wash, and Swiss CC Cream?").
 - If they have a problem with an order or need support, delegate to Customer_Support_Agent.
+  **CRITICAL (Support):** Rewrite the `query` to include order numbers or details mentioned in the history.
 - If they need advice on a routine, delegate to Skincare_Consultation_Agent.
+  **CRITICAL (Consultation):** Pass the exact [DYNAMIC CONTEXT] provided to you into the `context_and_history` parameter so the consultation agent can read the full history.
 - For simple greetings, you may respond directly.
 
 # CRITICAL DELEGATION RULE
@@ -65,7 +68,10 @@ Action: Call Customer_Support_Agent. Output its result.
 
 # Wrap the sub-agents in Python functions so they work flawlessly as standard tools.
 async def search_products_expert(query: str) -> str:
-    """Delegate the user's product search query to the Product Search Expert."""
+    """
+    Delegate the user's product search query to the Product Search Expert.
+    Make sure the `query` is fully rewritten to include all context and resolves pronouns (like 'it', 'above', 'those').
+    """
     logger.info(f"Delegating to Product_Search_Agent with query: {query}")
     try:
         response = await Product_Search_Agent.arun(query)
@@ -75,7 +81,10 @@ async def search_products_expert(query: str) -> str:
         return "I encountered an error searching for products."
 
 async def customer_support_expert(query: str) -> str:
-    """Delegate the user's customer support/order query to the Customer Support Expert."""
+    """
+    Delegate the user's customer support/order query to the Customer Support Expert.
+    Make sure the `query` is fully rewritten with specific order numbers from context.
+    """
     logger.info(f"Delegating to Customer_Support_Agent with query: {query}")
     try:
         response = await Customer_Support_Agent.arun(query)
@@ -84,11 +93,26 @@ async def customer_support_expert(query: str) -> str:
         logger.error(f"Error in Customer_Support_Agent: {e}")
         return "I encountered an error processing your support request."
 
-async def skincare_consultation_expert(query: str) -> str:
-    """Delegate the user's skincare routine or consultation query to the Skincare Consultation Expert."""
+async def skincare_consultation_expert(query: str, context_and_history: str) -> str:
+    """
+    Delegate the user's skincare routine or consultation query to the Skincare Consultation Expert.
+    
+    Args:
+        query: The user's specific request.
+        context_and_history: You MUST copy and paste the entire [DYNAMIC CONTEXT] provided to you into this parameter.
+    """
     logger.info(f"Delegating to Skincare_Consultation_Agent with query: {query}")
+    
+    # Combine context and query so the stateless sub-agent has full awareness
+    full_prompt = (
+        f"--- CONTEXT & HISTORY ---\n"
+        f"{context_and_history}\n\n"
+        f"--- CURRENT USER QUERY ---\n"
+        f"{query}"
+    )
+    
     try:
-        response = await Skincare_Consultation_Agent.arun(query)
+        response = await Skincare_Consultation_Agent.arun(full_prompt)
         return response.content if response and response.content else "Could not process consultation query."
     except Exception as e:
         logger.error(f"Error in Skincare_Consultation_Agent: {e}")
