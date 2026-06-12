@@ -16,10 +16,6 @@ class Settings(BaseSettings):
     # API Key for audio-to-text transcription (multilanguage)
     DEEPGRAM_API_KEY: Optional[str] = None
     
-    # API Key and Endpoint for Azure Mistral (Image-to-text extraction)
-    AZURE_MISTRAL_API_KEY: Optional[str] = None
-    MISTRAL_ENDPOINT: str = "https://mistral-document-ai-2512.eastus2.models.ai.azure.com/v1/chat/completions"
-    
 
     
     

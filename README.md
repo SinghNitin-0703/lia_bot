@@ -48,7 +48,7 @@ The project consists of two main components:
 ### Prerequisites
 *   Python 3.9+
 *   Azure OpenAI credentials (or standard OpenAI key if modifying the model client)
-*   Optional APIs for extended features (Tavily, Deepgram, Azure Mistral)
+*   Optional APIs for extended features (Tavily, Deepgram, Azure OpenAI Vision)
 
 ### Installation
 
@@ -83,7 +83,6 @@ The project consists of two main components:
 
     # Multimodal Features
     DEEPGRAM_API_KEY=your_deepgram_key
-    AZURE_MISTRAL_API_KEY=your_azure_mistral_key
     ```
 
 ## ⚡ Running the Application
@@ -107,7 +106,7 @@ Alternatively, you can run the backend and frontend separately:
 
 *   **Backend:** Python, FastAPI, Uvicorn, SQLAlchemy, ChromaDB, Agno
 *   **Frontend:** Python, Streamlit
-*   **AI/LLM:** Azure OpenAI, Deepgram, Mistral, Tavily
+*   **AI/LLM:** Azure OpenAI, Deepgram, Tavily
 
 ---
 *Created by [SinghNitin-0703](https://github.com/SinghNitin-0703)*

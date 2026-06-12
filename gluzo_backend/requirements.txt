@@ -16,7 +16,7 @@ agno>=1.0.0
 # Fuzzy String Matching (used for hybrid search & semantic cache)
 rapidfuzz>=3.9.0
 
-# Async HTTP Client (used for Tavily, Mistral OCR, and Deepgram Audio)
+# Async HTTP Client (used for Tavily, Azure OpenAI Vision, and Deepgram Audio)
 httpx>=0.27.0
 
 # Database and ORM

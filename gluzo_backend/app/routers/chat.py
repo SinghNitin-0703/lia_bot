@@ -90,7 +90,7 @@ async def chat_audio_endpoint(session_id: str = Form(...), file: UploadFile = Fi
 async def chat_image_endpoint(session_id: str = Form(...), file: UploadFile = File(...)):
     """
     Endpoint for image upload chat. 
-    It looks at the image using Mistral AI, extracts any text/product names, and asks the AI about it.
+    It looks at the image using Azure OpenAI, extracts any text/product names, and asks the AI about it.
     """
     try:
         logger.info(f"Received image chat request for session {session_id}")
@@ -98,7 +98,7 @@ async def chat_image_endpoint(session_id: str = Form(...), file: UploadFile = Fi
         image_bytes = await file.read()
         image_base64 = base64.b64encode(image_bytes).decode('utf-8')
         
-        extracted_text = await MediaService.process_image_mistral(image_base64)
+        extracted_text = await MediaService.process_image_vision(image_base64)
         
         if not extracted_text:
             return {"reply": "Sorry, I couldn't extract any text from that image. Make sure it's clear and well-lit.", "has_image": False}

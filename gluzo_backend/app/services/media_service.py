@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class MediaService:
     """
     This service handles all media (audio and image) processing tasks.
-    It acts as a bridge between our app and external AI services like Deepgram and Mistral.
+    It acts as a bridge between our app and external AI services like Deepgram and Azure OpenAI Vision.
     """
 
     @staticmethod
@@ -59,7 +59,7 @@ class MediaService:
 
 
     @staticmethod
-    async def process_image_mistral(image_base64: str) -> str:
+    async def process_image_vision(image_base64: str) -> str:
         """
         Takes a base64-encoded image (text representation of an image) 
         and extracts text/product names using Azure OpenAI Vision.
