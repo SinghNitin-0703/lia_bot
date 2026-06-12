@@ -261,13 +261,24 @@ class HybridSearchEngine:
         for prod_id in top_ids:
             try:
                 product = self.product_map[prod_id]
+                
+                # Build a local image URL from the image_paths field
+                # image_paths looks like: "images_final\product-name\0.jpg | images_final\product-name\1.jpg"
+                # We take the first path and convert it into a URL served by FastAPI
+                local_image_url = ""
+                if product.image_paths:
+                    first_path = product.image_paths.split(" | ")[0].strip()
+                    # Remove the "images_final\" prefix and normalize slashes for URLs
+                    relative_path = first_path.replace("images_final\\", "").replace("\\", "/")
+                    local_image_url = f"{settings.BASE_URL}/images/{relative_path}"
+                
                 final_results.append({
                     "matched_name": product.name,
                     "price": product.price,
                     "key_benefits": product.key_benefits,
                     "how_to_use": product.how_to_use,
                     "url": product.url,
-                    "image_urls": product.image_urls,
+                    "image_urls": local_image_url,
                     "discount": product.discount,
                     "rating": product.rating,
                     "review_count": product.review_count

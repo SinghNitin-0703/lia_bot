@@ -23,6 +23,10 @@ class Settings(BaseSettings):
 
     
     
+    # Base URL for the API server (used for constructing image URLs)
+    # Change this to your public domain when deploying (e.g. "https://yourdomain.com")
+    BASE_URL: str = "http://localhost:8000"
+    
     # Database and Cache configurations
     REDIS_URL: str = "redis://localhost:6379"
     

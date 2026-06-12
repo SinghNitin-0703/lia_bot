@@ -112,7 +112,9 @@ async def optimize_budget_combinations(
                     
                     valid_combinations.append({
                         "item_1": p1["matched_name"],
+                        "image_url_1": p1.get("image_urls", ""),
                         "item_2": p2["matched_name"],
+                        "image_url_2": p2.get("image_urls", ""),
                         "total_cost": round(total_cost, 2),
                         "value_score": round(value_score, 2)
                     })

@@ -1,6 +1,6 @@
 import logging
 import base64
-from app.cache import session_manager
+from app.cache import session_manager, semantic_cache
 from app.agents.router import process_user_query
 from app.agents.consultation import contextual_upsell_check
 from app.managers.connection_manager import manager
@@ -65,6 +65,13 @@ class ChatService:
         # Add the user's message to the session history
         await session_manager.add_to_history(session_id, "user", message)
         
+        # Check the semantic cache first — if we've answered this before, skip the AI entirely
+        cached_response = await semantic_cache.get_cached_response(message)
+        if cached_response:
+            logger.info(f"Cache hit! Returning cached response for session {session_id}")
+            await session_manager.add_to_history(session_id, "assistant", cached_response)
+            return cached_response
+        
         # Get the current items in the user's cart
         cart = await session_manager.get_cart_state(session_id)
         cart_str = ", ".join(cart) if cart else "Empty"
@@ -99,6 +106,9 @@ class ChatService:
                 response_text += upsell
         except Exception as upsell_error:
             logger.error(f"Upsell check failed: {upsell_error}", exc_info=True)
+        
+        # Save the response to the semantic cache for future use
+        await semantic_cache.cache_response(message, response_text)
             
         # Save the assistant's final response to the history
         await session_manager.add_to_history(session_id, "assistant", response_text)

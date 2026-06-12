@@ -62,8 +62,10 @@ def display_chat():
             with st.chat_message("assistant", avatar="🤖"):
                 st.write(msg["content"])
                 if "image_urls" in msg and msg["image_urls"]:
-                    for img_url in msg["image_urls"]:
-                        st.image(img_url)
+                    cols = st.columns(3)
+                    for idx, img_url in enumerate(msg["image_urls"]):
+                        with cols[idx % 3]:
+                            st.markdown(f'<img src="{img_url}" style="max-width: 100%; border-radius: 8px;" />', unsafe_allow_html=True)
 
 display_chat()
 

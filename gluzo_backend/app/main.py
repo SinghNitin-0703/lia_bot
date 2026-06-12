@@ -13,6 +13,7 @@ if 'opentelemetry.exporter.otlp.proto.common._exporter_metrics' not in sys.modul
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # Import our custom modules
 from app.database import init_db
@@ -57,6 +58,13 @@ app.add_middleware(
 # ---------------------------------------------------------
 
 app.include_router(chat.router)
+
+# ---------------------------------------------------------
+# Static Files (Product Images)
+# ---------------------------------------------------------
+# This makes the local product images accessible via URL.
+# Example: http://localhost:8000/images/revlon-touch-and-glow-advanced-glow-cream/0.jpg
+app.mount("/images", StaticFiles(directory="data/images_final"), name="images")
 
 # ---------------------------------------------------------
 # Root Endpoint (Health Check)
