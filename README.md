@@ -19,14 +19,16 @@ Welcome to the **Gluzo AI Assistant** repository! This is a state-of-the-art, fu
 *   **Multimodal Capabilities:**
     *   **Voice-to-Text:** Multilingual audio transcription using Deepgram (Model: `nova-2`).
     *   **Image Extraction:** Document and image-to-text capabilities powered by Azure OpenAI Vision (Model: `gpt-4.1-mini-2`).
-*   **RAG (Retrieval-Augmented Generation):**
-    *   Uses **ChromaDB** for efficient vector storage and semantic retrieval of the product catalog.
+*   **Advanced RAG (Retrieval-Augmented Generation):**
+    *   **Hybrid Search Engine:** Combines **Vector Search** (Semantic understanding via ChromaDB & OpenAI Embeddings) with **Lexical Search** (Keyword matching via BM25) for highly accurate product retrieval.
+    *   **Reciprocal Rank Fusion (RRF):** Mathematically merges scores from both vector and lexical searches to surface the absolute best product matches.
+    *   **Dynamic Sorting & Filtering:** Supports strict runtime allergen exclusion, hard budget constraints, and dynamic sorting by relevance, price, or popularity.
 
 ## 🧰 Agent Tools & Capabilities
 
 The agents are equipped with specialized tools to perform real-world actions:
 *   **External Search Tool (Tavily):** Researches competitor products online to extract their active ingredients and automatically finds the best alternative in our catalog based on ingredient overlap.
-*   **Product Search Tools:** Queries the internal vector database and SQL catalog to find products matching specific concerns, apply budget math, and strictly filter out allergens.
+*   **Product Search Tools:** Interfaces with the custom `HybridSearchEngine` to query the vector database and lexical index simultaneously. Can dynamically filter out allergens and apply complex budget math before returning results.
 *   **Customer Support Tools:** Interfaces with the backend to check order statuses, process returns, verify inventory, provide shipping estimates, and gracefully escalate issues to a human agent.
 
 ## 🏗️ Architecture
