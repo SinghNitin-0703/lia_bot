@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # We use SQLite with the 'aiosqlite' async driver for our Noob-Friendly MVP.
 # This is a local database stored in a file, which is great for development.
-DATABASE_URL = "sqlite+aiosqlite:///./gluzo_v2.db"
+DATABASE_URL = "sqlite+aiosqlite:///./data/gluzo_v2.db"
 
 # The engine is the main connection to the database
 engine = None

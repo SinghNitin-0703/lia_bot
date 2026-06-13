@@ -39,6 +39,7 @@ The project consists of two main components:
     *   Uses **ChromaDB** for vector storage.
     *   SQLite database managed via SQLAlchemy for user profiling.
     *   Fuzzy string matching for caching via RapidFuzz and `cachetools`.
+    *   Automated unit testing using `pytest` within the `tests/` directory.
 2.  **Streamlit Frontend (`streamlit_ui/`)**
     *   A beautiful, responsive chatbot UI built with [Streamlit](https://streamlit.io/).
     *   Connects directly to the backend API to stream responses.
@@ -67,7 +68,7 @@ The project consists of two main components:
 3.  **Install Frontend Dependencies:**
     ```bash
     cd ../streamlit_ui
-    pip install streamlit requests
+    pip install -r requirements.txt
     ```
 
 4.  **Environment Variables:**
@@ -83,6 +84,9 @@ The project consists of two main components:
 
     # Multimodal Features
     DEEPGRAM_API_KEY=your_deepgram_key
+
+    # Public Deployment Tunnel
+    NGROK_AUTHTOKEN=your_ngrok_token_here
     ```
 
 ## ⚡ Running the Application
@@ -97,6 +101,7 @@ python start_all.py
 This will:
 1. Start the FastAPI server on `http://localhost:8000`.
 2. Start the Streamlit UI on `http://localhost:8501`.
+3. Automatically launch a secure Ngrok tunnel, providing you with a Public URL to instantly share your live app over the internet!
 
 Alternatively, you can run the backend and frontend separately:
 *   **Backend:** `cd gluzo_backend && uvicorn app.main:app --reload` *(or whatever your run script is)*
@@ -104,9 +109,10 @@ Alternatively, you can run the backend and frontend separately:
 
 ## 🛠️ Tech Stack
 
-*   **Backend:** Python, FastAPI, Uvicorn, SQLAlchemy, ChromaDB, Agno
+*   **Backend:** Python, FastAPI, Uvicorn, SQLAlchemy, ChromaDB, Agno, Pytest
 *   **Frontend:** Python, Streamlit
 *   **AI/LLM:** Azure OpenAI, Deepgram, Tavily
+*   **Deployment:** Ngrok
 
 ---
 *Created by [SinghNitin-0703](https://github.com/SinghNitin-0703)*

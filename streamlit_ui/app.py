@@ -99,7 +99,12 @@ def display_chat():
                     cols = st.columns(3)
                     for idx, img_url in enumerate(msg["image_urls"]):
                         with cols[idx % 3]:
-                            st.markdown(f'<img src="{img_url}" style="max-width: 100%; border-radius: 8px;" />', unsafe_allow_html=True)
+                            try:
+                                # Fetch the image internally so public users can see it
+                                img_bytes = requests.get(img_url).content
+                                st.image(img_bytes, use_container_width=True)
+                            except Exception:
+                                st.error("Image load failed")
 
 display_chat()
 
