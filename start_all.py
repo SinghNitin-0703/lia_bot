@@ -42,6 +42,7 @@ print("Press Ctrl+C to stop all services.")
 
 # Ensure we clean up processes when this script closes
 def cleanup():
+    """funxtion summary and flow in very short  """
     print("\nShutting down processes...")
     if backend_process: backend_process.terminate()
     if frontend_process: frontend_process.terminate()

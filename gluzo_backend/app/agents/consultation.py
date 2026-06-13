@@ -41,6 +41,7 @@ Skincare_Consultation_Agent = Agent(
 )
 
 async def contextual_upsell_check(session_id: str) -> str:
+    """funxtion summary and flow in very short  """
     """
     Screens the active cart_state. If a heavy active (e.g., BHA) is detected without a barrier repair item,
     injects a recommendation for a repair item (e.g., Plum 2% Niacinamide Gel Cream).

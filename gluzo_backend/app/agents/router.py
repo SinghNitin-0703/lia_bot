@@ -9,6 +9,7 @@ from app.agents.search import Product_Search_Agent
 from app.agents.support import Customer_Support_Agent
 from app.agents.consultation import Skincare_Consultation_Agent
 from app.tools.support_tools import update_user_profile
+from app.tools.search_tools import add_to_cart
 
 # Set up logging so we can track the routing process
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ Your job is to route the user's request to the correct specialized agent, or han
   **CRITICAL (Support):** Rewrite the `query` to include order numbers or details mentioned in the history.
 - If they need advice on a routine, delegate to Skincare_Consultation_Agent.
   **CRITICAL (Consultation):** Pass the exact [DYNAMIC CONTEXT] provided to you into the `context_and_history` parameter so the consultation agent can read the full history.
+- **CRITICAL (Cart):** If the user says "add this to my cart", "I'll take it", or similar, DO NOT DELEGATE. You MUST immediately use the `add_to_cart` tool yourself to add the item. Use the session_id from the [DYNAMIC CONTEXT].
 - For simple greetings, you may respond directly.
 
 # CRITICAL DELEGATION RULE
@@ -69,8 +71,22 @@ Action: Call Customer_Support_Agent. Output its result.
 # Wrap the sub-agents in Python functions so they work flawlessly as standard tools.
 async def search_products_expert(query: str) -> str:
     """
-    Delegate the user's product search query to the Product Search Expert.
+    Delegates the user's product search, price check, or catalog inquiry to the specialized Product Search Expert.
+    This tool MUST be used when the user wants to buy, search, or compare products in our catalog.
+    
+    # CRITICAL:
     Make sure the `query` is fully rewritten to include all context and resolves pronouns (like 'it', 'above', 'those').
+
+    # Few-Shot Examples:
+    <example>
+    User context: Looking at "Vitamin C Serum"
+    User: "What's the price of it?"
+    Tool Call: search_products_expert(query="What is the price of Vitamin C Serum?")
+    </example>
+    <example>
+    User: "Show me a cleanser for oily skin under $20"
+    Tool Call: search_products_expert(query="Show me a cleanser for oily skin under $20")
+    </example>
     """
     logger.info(f"Delegating to Product_Search_Agent with query: {query}")
     try:
@@ -82,8 +98,18 @@ async def search_products_expert(query: str) -> str:
 
 async def customer_support_expert(query: str) -> str:
     """
-    Delegate the user's customer support/order query to the Customer Support Expert.
+    Delegates the user's customer support or order-related query to the specialized Customer Support Expert.
+    Use this for complaints, returns, refunds, or tracking orders.
+    
+    # CRITICAL:
     Make sure the `query` is fully rewritten with specific order numbers from context.
+
+    # Few-Shot Examples:
+    <example>
+    User context: Recent order is ORD-12345
+    User: "Where is my order?"
+    Tool Call: customer_support_expert(query="Where is my order ORD-12345?")
+    </example>
     """
     logger.info(f"Delegating to Customer_Support_Agent with query: {query}")
     try:
@@ -95,11 +121,18 @@ async def customer_support_expert(query: str) -> str:
 
 async def skincare_consultation_expert(query: str, context_and_history: str) -> str:
     """
-    Delegate the user's skincare routine or consultation query to the Skincare Consultation Expert.
+    Delegates the user's skincare routine or consultation query to the Skincare Consultation Expert.
+    Use this when the user needs advice on how to use products, layering routines, or dermatological guidance.
     
     Args:
         query: The user's specific request.
         context_and_history: You MUST copy and paste the entire [DYNAMIC CONTEXT] provided to you into this parameter.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "How often should I use the BHA exfoliator?"
+    Tool Call: skincare_consultation_expert(query="How often should I use the BHA exfoliator?", context_and_history="<entire context block>")
+    </example>
     """
     logger.info(f"Delegating to Skincare_Consultation_Agent with query: {query}")
     
@@ -129,10 +162,11 @@ Gluzo_Supervisor_Agent = Agent(
     ),
     description="You are the master router for the Gluzo backend.",
     instructions=ROUTER_SYSTEM_PROMPT,
-    tools=[search_products_expert, customer_support_expert, skincare_consultation_expert, update_user_profile],
+    tools=[search_products_expert, customer_support_expert, skincare_consultation_expert, update_user_profile, add_to_cart],
 )
 
 async def process_user_query(session_id: str, query: str, context_string: str) -> str:
+    """funxtion summary and flow in very short  """
     """
     Executes a query against the Supervisor Agent.
     The dynamic context_string is injected at the bottom so the AI knows the user's current situation.

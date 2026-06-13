@@ -45,15 +45,49 @@ st.markdown("""
 
 st.title("✨ Gluzo AI Assistant")
 
-# Initialize session state
-if "session_id" not in st.session_state:
-    st.session_state["session_id"] = str(uuid.uuid4())
+# ---------------------------------------------------------
+# Simple Phone Number "Login" System
+# ---------------------------------------------------------
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
+if not st.session_state["logged_in"]:
+    st.markdown("<h3 style='text-align: center; color: white;'>Welcome! Please log in.</h3>", unsafe_allow_html=True)
+    phone_number = st.text_input("📞 Enter your Phone Number to continue:", placeholder="e.g. 555-0192")
+    
+    # Center the button
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Start Chatting", use_container_width=True):
+            if len(phone_number) >= 7:
+                # We use the phone number as the unique session_id!
+                st.session_state["session_id"] = phone_number.strip()
+                st.session_state["logged_in"] = True
+                st.session_state["messages"] = []
+                st.rerun()
+            else:
+                st.error("Please enter a valid phone number.")
+                
+    # Stop the rest of the page from rendering until they log in
+    st.stop()
+
+# ---------------------------------------------------------
+# Main Chat Interface (Only runs if logged in)
+# ---------------------------------------------------------
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
+    
+# Show a little logout button in the sidebar
+with st.sidebar:
+    st.success(f"Logged in as: **{st.session_state['session_id']}**")
+    if st.button("Logout"):
+        st.session_state["logged_in"] = False
+        st.rerun()
 
 API_URL = "http://localhost:8000/api"
 
 def display_chat():
+    """funxtion summary and flow in very short  """
     for msg in st.session_state["messages"]:
         if msg["role"] == "user":
             with st.chat_message("user", avatar="👤"):

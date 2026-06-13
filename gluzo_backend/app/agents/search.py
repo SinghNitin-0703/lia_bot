@@ -3,7 +3,8 @@ from agno.models.azure import AzureOpenAI
 from app.config import settings
 from app.tools.search_tools import (
     match_product_term,
-    optimize_budget_combinations
+    optimize_budget_combinations,
+    add_to_cart
 )
 from app.tools.external_tools import find_competitor_alternative
 
@@ -33,6 +34,7 @@ Product_Search_Agent = Agent(
     - Use 'match_product_term' to search for specific items. Pass 'excluded_ingredients' to filter out allergens. Use 'sort_by' if the user asks for the "most popular", "cheapest", or "most expensive" items (e.g. sort_by="popularity", "price_low", "price_high").
     - Use 'optimize_budget_combinations' to find the best value matches when budget limits are involved. Always pass 'excluded_ingredients' to this tool if the user mentions allergens.
     - Use 'find_competitor_alternative' when a user asks for a specific brand or product we don't have. It will fetch ingredients and find our closest 80-90% match.
+    - IMPORTANT: If the user says "add this to my cart", "I'll take it", or similar, YOU MUST call the 'add_to_cart' tool to physically add the item to their cart. Use the session_id from the DYNAMIC CONTEXT.
     
     # Edge Cases & Fallbacks
     - If the user query is extreme gibberish (e.g. random keystrokes like 'asdfasdfasdf'), DO NOT attempt to search or use tools. Just ask them to clarify to save tokens.
@@ -50,5 +52,5 @@ Product_Search_Agent = Agent(
 
     Keep your tone professional, concise, and helpful.
     """,
-    tools=[match_product_term, optimize_budget_combinations, find_competitor_alternative],
+    tools=[match_product_term, optimize_budget_combinations, find_competitor_alternative, add_to_cart],
 )

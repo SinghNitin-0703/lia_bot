@@ -39,6 +39,7 @@ try:
     # to work at the same time without locking the entire database.
     @event.listens_for(engine.sync_engine, "connect")
     def set_sqlite_pragma(dbapi_connection, connection_record):
+        """funxtion summary and flow in very short  """
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA synchronous=NORMAL")
@@ -65,6 +66,7 @@ else:
 # ---------------------------------------------------------
 
 async def get_db() -> AsyncSession: # type: ignore
+    """funxtion summary and flow in very short  """
     """
     This function gives us a database session to use.
     It's used primarily for FastAPI endpoint dependency injection.
@@ -86,6 +88,7 @@ async def get_db() -> AsyncSession: # type: ignore
 # ---------------------------------------------------------
 
 async def init_db() -> None:
+    """funxtion summary and flow in very short  """
     """
     Creates all tables in SQLite. 
     If the Products table is empty, it reads the CSV file and fills the database with products.

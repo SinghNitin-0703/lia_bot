@@ -9,13 +9,19 @@ logger = logging.getLogger(__name__)
 
 def escalate_to_human(name: str, contact_info: str, problem_summary: str) -> str:
     """
-    Sends the customer's personal data and a summary of their problem to the human customer care team.
+    Escalates an issue to the human customer care team.
     Always use this tool for ANY customer support issue (returns, tracking, complaints, etc.).
     
     Args:
         name: The customer's full name.
         contact_info: The customer's email or phone number.
         problem_summary: A brief summary of the customer's issue.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "I want a refund for my last order, it arrived broken. My email is john@test.com and name is John Doe."
+    Tool Call: escalate_to_human(name="John Doe", contact_info="john@test.com", problem_summary="Order arrived broken, requesting refund.")
+    </example>
     """
     logger.info(f"Escalating to human: Name: {name}, Contact: {contact_info}, Problem: {problem_summary}")
     
@@ -33,13 +39,19 @@ def escalate_to_human(name: str, contact_info: str, problem_summary: str) -> str
 async def update_user_profile(session_id: str, name: str = "", skin_type: str = "", skin_issues: str = "") -> str:
     """
     Saves or updates the user's personal profile in the database.
-    Use this tool secretly whenever the user mentions their name, skin type, or skin issues.
+    Use this tool secretly whenever the user mentions their name, skin type, or skin issues, so the system remembers it for the future.
     
     Args:
         session_id: The user's session ID.
         name: The user's name (if mentioned).
-        skin_type: The user's skin type, e.g., 'dry', 'oily', 'combination' (if mentioned).
-        skin_issues: Any skin concerns or allergies, e.g., 'acne', 'rosacea', 'allergic to vitamin c' (if mentioned).
+        skin_type: The user's skin type (e.g., 'dry', 'oily').
+        skin_issues: Any skin concerns or allergies (e.g., 'acne', 'allergic to vitamin c').
+        
+    # Few-Shot Examples:
+    <example>
+    User: "My name is Sarah and I have really dry skin."
+    Tool Call: update_user_profile(session_id="12345", name="Sarah", skin_type="dry", skin_issues="")
+    </example>
     """
     logger.info(f"Updating profile for {session_id} - Name: {name}, Skin: {skin_type}, Issues: {skin_issues}")
     

@@ -3,6 +3,7 @@ import logging
 from rapidfuzz import process, fuzz
 from sqlalchemy import select, not_
 
+from app.cache import session_manager
 from app.database import AsyncSessionLocal
 from app.models import Product
 
@@ -12,14 +13,20 @@ from app.search_engine import hybrid_search_engine
 
 async def match_product_term(search_term: str, excluded_ingredients: list[str] = [], max_budget: float = None, sort_by: str = "relevance") -> str:
     """
-    Finds products using an Industry Standard Hybrid Search (Vector Semantic + BM25 Lexical) via Reciprocal Rank Fusion.
-    Also strictly filters out any products containing excluded_ingredients and applies max_budget if provided.
+    Finds products in the catalog using Hybrid Search. Use this tool for ANY direct product searches, symptoms, or recommendations.
+    Strictly filters out any products containing excluded_ingredients and applies max_budget if provided.
     
     Args:
-        search_term: The complex query, symptom, or exact name of the product the user wants.
+        search_term: The complex query, symptom, or exact name of the product the user wants (e.g. 'hydrating cleanser', 'acne scar serum').
         excluded_ingredients: A list of strings representing allergens (e.g. ['fragrance', 'niacinamide']).
         max_budget: Optional float for the maximum allowable price.
         sort_by: Optional sorting strategy: 'relevance', 'popularity', 'price_low', 'price_high'.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "I need a cheap moisturizer without fragrance"
+    Tool Call: match_product_term(search_term="moisturizer", excluded_ingredients=["fragrance"], sort_by="price_low")
+    </example>
     """
     logger.info(f"Initiating Hybrid Search for '{search_term}'. Exclusions: {excluded_ingredients}, Max Budget: {max_budget}, Sort By: {sort_by}")
     
@@ -63,7 +70,19 @@ async def optimize_budget_combinations(
 ) -> str:
     """
     Math Engine: Finds the highest-rated combination of two product types under a specific budget cap.
-    Takes active discounts into account and strictly filters out allergens.
+    Use this ONLY when the user asks for a combination of exactly two types of products under a strict total budget.
+    
+    Args:
+        max_budget: The total combined maximum price.
+        product_type_1: The first product type (e.g., 'cleanser').
+        product_type_2: The second product type (e.g., 'sunscreen').
+        excluded_ingredients: Allergens to filter out.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "Can I get a cleanser and a moisturizer for under $50 total? No nuts."
+    Tool Call: optimize_budget_combinations(max_budget=50.0, product_type_1="cleanser", product_type_2="moisturizer", excluded_ingredients=["nut", "almond", "walnut"])
+    </example>
     """
     try:
         # 1. Setup: If no allergens are provided, use an empty list
@@ -135,3 +154,43 @@ async def optimize_budget_combinations(
         # Master Error Handler: Catch any unexpected crashes (like database connection issues)
         logger.error(f"Budget optimization failed: {e}", exc_info=True)
         return json.dumps({"error": "An unexpected error occurred while calculating the budget."})
+
+
+async def add_to_cart(session_id: str, product_name: str) -> str:
+    """
+    Adds a specific product to the user's shopping cart.
+    Always use this tool when the user explicitly expresses intent to buy, like "add to cart", "I'll take it", or "buy this".
+    
+    Args:
+        session_id: The user's session ID (found in your DYNAMIC CONTEXT).
+        product_name: The exact name of the product to add.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "Add the Aloe Vera Gel to my cart"
+    Tool Call: add_to_cart(session_id="12345", product_name="Aloe Vera Gel")
+    </example>
+    """
+    try:
+        # 1. Fetch the current cart list from memory
+        cart = await session_manager.get_cart_state(session_id)
+        
+        # 2. Add the new item to the list, if it isn't already there
+        if product_name not in cart:
+            cart.append(product_name)
+            
+        # 3. Save the updated list back into memory
+        await session_manager.set_cart_state(session_id, cart)
+        
+        logger.info(f"Added {product_name} to cart for session {session_id}")
+        
+        # 4. Tell the AI that it was successful
+        return json.dumps({
+            "status": "Success", 
+            "message": f"Successfully added {product_name} to the cart."
+        })
+        
+    except Exception as e:
+        # If something crashes, log the error and tell the AI
+        logger.error(f"Error adding to cart: {e}")
+        return json.dumps({"error": "Failed to add item to cart."})

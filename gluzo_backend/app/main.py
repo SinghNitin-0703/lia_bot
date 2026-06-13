@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """funxtion summary and flow in very short  """
     try:
         logger.info("Starting up the application and initializing the database...")
         # Initialize the database and create tables if they don't exist
@@ -72,6 +73,7 @@ app.mount("/images", StaticFiles(directory="data/images_final"), name="images")
 
 @app.get("/")
 async def root():
+    """funxtion summary and flow in very short  """
     """
     A simple endpoint to verify the server is running.
     """

@@ -6,9 +6,11 @@ logger = logging.getLogger(__name__)
 class ConnectionManager:
     def __init__(self):
         # A dictionary to store active connections by session ID
+        """funxtion summary and flow in very short  """
         self.active_connections: dict[str, WebSocket] = {}
 
     async def connect(self, session_id: str, websocket: WebSocket):
+        """funxtion summary and flow in very short  """
         try:
             # Accept the WebSocket connection, ensuring we echo back the subprotocol 
             # if the client (e.g., browser) sent one for authentication.
@@ -21,6 +23,7 @@ class ConnectionManager:
             logger.error(f"Failed to connect WebSocket for session {session_id}: {e}", exc_info=True)
 
     def disconnect(self, session_id: str):
+        """funxtion summary and flow in very short  """
         try:
             # Remove the connection from our dictionary if it exists
             if session_id in self.active_connections:
@@ -30,6 +33,7 @@ class ConnectionManager:
             logger.error(f"Error while disconnecting WebSocket for session {session_id}: {e}", exc_info=True)
 
     async def send_personal_message(self, message: str, session_id: str):
+        """funxtion summary and flow in very short  """
         try:
             # Send a text message to a specific session if it is connected
             if session_id in self.active_connections:

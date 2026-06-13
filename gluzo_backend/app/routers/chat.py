@@ -13,6 +13,7 @@ router = APIRouter(prefix="/api")
 import re
 
 def format_chat_response(response_text: str, extra_fields: dict = None):
+    """funxtion summary and flow in very short  """
     """
     Parses the Markdown response from the AI, extracts any image URLs, 
     and structures the JSON for the frontend.
@@ -41,6 +42,7 @@ def format_chat_response(response_text: str, extra_fields: dict = None):
 
 @router.post("/chat")
 async def chat_endpoint(request: ChatRequest):
+    """funxtion summary and flow in very short  """
     """
     Standard HTTP endpoint for chat. Used by web frontends.
     """
@@ -59,6 +61,7 @@ async def chat_endpoint(request: ChatRequest):
 
 @router.post("/chat/audio")
 async def chat_audio_endpoint(session_id: str = Form(...), file: UploadFile = File(...)):
+    """funxtion summary and flow in very short  """
     """
     Endpoint for audio upload chat. 
     It transcribes the spoken audio using Deepgram and passes the text to our AI assistant.
@@ -88,6 +91,7 @@ async def chat_audio_endpoint(session_id: str = Form(...), file: UploadFile = Fi
 
 @router.post("/chat/image")
 async def chat_image_endpoint(session_id: str = Form(...), file: UploadFile = File(...)):
+    """funxtion summary and flow in very short  """
     """
     Endpoint for image upload chat. 
     It looks at the image using Azure OpenAI, extracts any text/product names, and asks the AI about it.

@@ -11,6 +11,7 @@ import json
 logger = logging.getLogger(__name__)
 
 async def research_competitor_product(product_name: str) -> CompetitorFormulaExtract:
+    """funxtion summary and flow in very short  """
     """
     Uses the Tavily API to look up missing competitor ingredients.
     If the API key is missing or set to a mock, gracefully returns a simulated payload.
@@ -58,8 +59,17 @@ async def research_competitor_product(product_name: str) -> CompetitorFormulaExt
 
 async def find_competitor_alternative(competitor_product_name: str) -> str:
     """
-    Use this tool when a user asks for a specific brand or product that we DO NOT carry.
-    It researches the competitor product's active ingredients and finds the closest matching alternative in our catalog based on ingredient overlap.
+    Researches a competitor's product using external APIs and finds the closest matching alternative in our catalog based on ingredient overlap.
+    Use this tool when a user asks for a specific brand or product that we DO NOT carry (e.g. CeraVe, Cetaphil, The Ordinary).
+    
+    Args:
+        competitor_product_name: The exact name of the competitor's product to research.
+        
+    # Few-Shot Examples:
+    <example>
+    User: "Do you have something like CeraVe Hydrating Cleanser?"
+    Tool Call: find_competitor_alternative(competitor_product_name="CeraVe Hydrating Cleanser")
+    </example>
     """
     # 1. Research competitor via Tavily (or mock)
     competitor_data = await research_competitor_product(competitor_product_name)

@@ -1,0 +1,33 @@
+name,price
+Bioderma Photoderm Aquafluide Claire SPF 100+,"₹1,364.00"
+Bioderma Sebium Pore Refiner,"₹1,378.00"
+Minimalist Barrier Repair Face Moisturizer with Vitamin B12 Complex 5.5%,₹379.00
+Foxtale Vitamin-C Super Glow Moisturiser,₹375.00
+Foxtale Gentle Hydrating Face Wash,₹271.00
+Foxtale 12% Niacinamide Face Serum with Azelaic Acid,₹432.00
+Bioderma Sensibio H2O Micellar Water,₹404.00
+Foxtale Nourishing Ceramide Face Moisturizer,₹224.00
+Foxtale Oil and Acne Control Face Wash,₹224.00
+Foxtale Acne Control Cleanser 2% Salicylic Acid Face Wash,₹271.00
+Bioderma Atoderm Intensive Foaming Gel with Niacinamide,₹629.00
+Bioderma Sebium Gel Moussant Acne Cleanser,₹422.00
+Bioderma Atoderm Intensive Ultra Soothing Baume,₹474.00
+Foxtale De-Tan Clay Mask – Lactic Acid | For Glowing Skin & Tan Removal,₹481.00
+Bioderma Cleansing Oil,"₹1,424.00"
+Hyphen Barrier Repair Moisturizer,₹404.00
+Foxtale 15% Vitamin C Face Serum,₹494.00
+Foxtale 5x Hydrating Ceramide Moisturizer,₹394.00
+DOT & KEY Barrier Repair Face Wash,₹217.00
+Bioderma Cicabio SPF 50+ Repairing Cream,"₹1,745.00"
+Foxtale Oil-Balancing Gel Moisturizer,₹384.00
+Bioderma Sebium Gel Moussant,₹489.00
+Foxtale Dewy Sunscreen SPF 70 PA++++,₹408.00
+Bioderma Photoderm Creme SPF 50+ PA++++ Hydrating Sunscreen,"₹1,079.00"
+Bioderma Sebium Hydra Moisturizer,"₹1,076.00"
+Foxtale Vitamin C Super Glow Face Wash,₹224.00
+Foxtale Glow Sunscreen SPF 50 PA++++,₹314.00
+Dot & Key Barrier Repair Lip Balm,₹217.00
+Bioderma Atoderm Intensive Baume,₹759.00
+Bioderma Sensibio Gentle Soothing Micellar Cleansing Foaming Gel,₹359.00
+Hyphen Barrier repair moisturizer with 2% ceramide,₹404.00
+Bioderma Atoderm Intensive Gel Creme Moisturize,₹693.00

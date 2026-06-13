@@ -19,6 +19,7 @@ class SemanticCacheManager:
     """
     
     def __init__(self):
+        """funxtion summary and flow in very short  """
         try:
             self.redis_url = settings.REDIS_URL
             
@@ -36,6 +37,7 @@ class SemanticCacheManager:
             self._lock = asyncio.Lock()
             
     async def get_cached_response(self, query: str) -> Optional[str]:
+        """funxtion summary and flow in very short  """
         """
         Attempts to find an exact match for a query in our cache.
         Returns the saved response if found, otherwise returns None.
@@ -56,6 +58,7 @@ class SemanticCacheManager:
             return None
             
     async def cache_response(self, query: str, response: str) -> None:
+        """funxtion summary and flow in very short  """
         """
         Saves a query-response pair to the cache for future use.
         """
@@ -80,12 +83,14 @@ class SessionStateManager:
     def __init__(self):
         # We store everything in a TTLCache to prevent unbounded memory growth.
         # Max 10,000 active sessions, expires after 24 hours (86400 seconds) of inactivity.
+        """funxtion summary and flow in very short  """
         self.sessions = TTLCache(maxsize=10000, ttl=86400)
         # FIX for Issue #7: TTLCache race condition
         self._lock = asyncio.Lock()
         logger.info("Initialized SessionStateManager.")
         
     async def _initialize_session(self, session_id: str) -> None:
+        """funxtion summary and flow in very short  """
         """
         Creates a new empty session for a user if they don't have one yet.
         """
@@ -103,6 +108,7 @@ class SessionStateManager:
             logger.error(f"Failed to initialize session for {session_id}: {e}", exc_info=True)
             
     async def get_cart_state(self, session_id: str) -> List[str]:
+        """funxtion summary and flow in very short  """
         """Returns the list of items in the user's cart."""
         try:
             await self._initialize_session(session_id)
@@ -119,6 +125,7 @@ class SessionStateManager:
             return []
             
     async def set_cart_state(self, session_id: str, cart: List[str]) -> None:
+        """funxtion summary and flow in very short  """
         """Updates the list of items in the user's cart."""
         try:
             await self._initialize_session(session_id)
@@ -131,6 +138,7 @@ class SessionStateManager:
             logger.error(f"Error setting cart state for {session_id}: {e}", exc_info=True)
             
     async def get_last_viewed_sku(self, session_id: str) -> Optional[str]:
+        """funxtion summary and flow in very short  """
         """Returns the SKU of the last product the user viewed."""
         try:
             await self._initialize_session(session_id)
@@ -141,6 +149,7 @@ class SessionStateManager:
             return None
             
     async def set_last_viewed_sku(self, session_id: str, sku: str) -> None:
+        """funxtion summary and flow in very short  """
         """Saves the SKU of the product the user is currently looking at."""
         try:
             await self._initialize_session(session_id)
@@ -153,6 +162,7 @@ class SessionStateManager:
             logger.error(f"Error setting last viewed SKU for {session_id}: {e}", exc_info=True)
             
     async def add_to_history(self, session_id: str, role: str, message: str) -> None:
+        """funxtion summary and flow in very short  """
         """
         Adds a message to the user's chat history.
         Role is usually 'user' or 'assistant'.
@@ -171,6 +181,7 @@ class SessionStateManager:
             logger.error(f"Error adding to history for {session_id}: {e}", exc_info=True)
             
     async def get_raw_history(self, session_id: str) -> List[Dict[str, str]]:
+        """funxtion summary and flow in very short  """
         """Returns the complete chat history for a user."""
         try:
             await self._initialize_session(session_id)

@@ -25,6 +25,7 @@ class HybridSearchEngine:
     """
     
     def __init__(self):
+        """funxtion summary and flow in very short  """
         self.chroma_client = None
         self.collection = None
         
@@ -81,6 +82,7 @@ class HybridSearchEngine:
         self.is_initialized = False
 
     async def initialize_engine(self):
+        """funxtion summary and flow in very short  """
         """
         Loads products from the SQL database into our Search Engine (ChromaDB and BM25).
         """
@@ -149,6 +151,7 @@ class HybridSearchEngine:
         logger.info(f"Hybrid Search Engine is ready with {len(all_products)} products.")
 
     async def search(self, query: str, top_k: int = 5, excluded_ingredients: List[str] = None, max_price: float = None, sort_by: str = "relevance") -> List[Dict]:
+        """funxtion summary and flow in very short  """
         """
         Executes a dual-track search (Vector + Lexical) and combines the results.
         Strictly filters out any excluded ingredients (allergens).

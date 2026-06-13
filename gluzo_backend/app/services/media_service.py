@@ -13,6 +13,7 @@ class MediaService:
 
     @staticmethod
     async def process_audio_deepgram(audio_bytes: bytes) -> str:
+        """funxtion summary and flow in very short  """
         """
         Takes raw audio data and converts it into text using Deepgram's AI.
         It supports multiple languages automatically.
@@ -60,6 +61,7 @@ class MediaService:
 
     @staticmethod
     async def process_image_vision(image_base64: str) -> str:
+        """funxtion summary and flow in very short  """
         """
         Takes a base64-encoded image (text representation of an image) 
         and extracts text/product names using Azure OpenAI Vision.

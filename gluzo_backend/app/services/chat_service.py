@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 class ChatService:
     @staticmethod
     async def get_user_preferences(session_id: str) -> str:
+        """funxtion summary and flow in very short  """
         """
         Helper to fetch Long-Term Memory (preferences) from the database.
         Returns a formatted string of the user's saved name, skin type, etc.
@@ -34,6 +35,7 @@ class ChatService:
 
     @staticmethod
     async def get_short_term_memory(session_id: str) -> str:
+        """funxtion summary and flow in very short  """
         """
         Helper to fetch Short-Term Memory (the last 5 messages from the live chat).
         This gives the AI context of the current conversation.
@@ -59,6 +61,7 @@ class ChatService:
 
     @staticmethod
     async def process_standard_chat(session_id: str, message: str) -> str:
+        """funxtion summary and flow in very short  """
         """
         Processes a synchronous chat request from a web frontend.
         """
