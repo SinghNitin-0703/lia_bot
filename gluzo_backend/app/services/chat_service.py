@@ -2,7 +2,6 @@ import logging
 import base64
 from app.cache import session_manager, semantic_cache
 from app.agents.router import process_user_query
-from app.agents.consultation import contextual_upsell_check
 from app.managers.connection_manager import manager
 from app.database import AsyncSessionLocal
 from sqlalchemy import select
@@ -133,13 +132,7 @@ class ChatService:
             response_text = "I'm having trouble connecting to my brain right now. Please try again later."
             
         # Check if we should recommend any additional products based on what's in the cart
-        try:
-            upsell = await contextual_upsell_check(session_id)
-            if upsell:
-                logger.info(f"Adding upsell recommendation for session {session_id}")
-                response_text += upsell
-        except Exception as upsell_error:
-            logger.error(f"Upsell check failed: {upsell_error}", exc_info=True)
+        # Feature removed per user request.
         
         # Save the response to the semantic cache for future use (ONLY if it's general knowledge)
         if not is_personal:
