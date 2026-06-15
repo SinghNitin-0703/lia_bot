@@ -60,6 +60,32 @@ class ChatService:
 
 
     @staticmethod
+    def is_personal_query(message: str) -> bool:
+        """
+        SECURITY FIX: Checks if a query is likely asking for personalized information.
+        If it is, we should NOT use the global semantic cache to prevent data leaks.
+        """
+        # A simple list of words that usually mean the user is talking about themselves or their account
+        personal_keywords = [
+            "i", "my", "me", "mine", "myself",
+            "order", "ord-", "account", "profile", 
+            "track", "return", "refund", "cart",
+            "name", "address"
+        ]
+        
+        # Make the message lowercase and split it into individual words
+        words = message.lower().split()
+        
+        # Check if any personal word is in the message
+        for word in words:
+            # Clean punctuation from the word (like "order?" -> "order")
+            clean_word = ''.join(char for char in word if char.isalnum() or char == '-')
+            if clean_word in personal_keywords:
+                return True
+                
+        return False
+
+    @staticmethod
     async def process_standard_chat(session_id: str, message: str) -> str:
         """funxtion summary and flow in very short  """
         """
@@ -68,12 +94,17 @@ class ChatService:
         # Add the user's message to the session history
         await session_manager.add_to_history(session_id, "user", message)
         
-        # Check the semantic cache first — if we've answered this before, skip the AI entirely
-        cached_response = await semantic_cache.get_cached_response(message)
-        if cached_response:
-            logger.info(f"Cache hit! Returning cached response for session {session_id}")
-            await session_manager.add_to_history(session_id, "assistant", cached_response)
-            return cached_response
+        # SECURITY FIX: Determine if we should even use the cache
+        # We don't want to serve someone else's personal info to this user!
+        is_personal = ChatService.is_personal_query(message)
+        
+        # Check the semantic cache first (ONLY if it's a general, non-personal query)
+        if not is_personal:
+            cached_response = await semantic_cache.get_cached_response(message)
+            if cached_response:
+                logger.info(f"Cache hit! Returning cached response for session {session_id}")
+                await session_manager.add_to_history(session_id, "assistant", cached_response)
+                return cached_response
         
         # Get the current items in the user's cart
         cart = await session_manager.get_cart_state(session_id)
@@ -110,8 +141,12 @@ class ChatService:
         except Exception as upsell_error:
             logger.error(f"Upsell check failed: {upsell_error}", exc_info=True)
         
-        # Save the response to the semantic cache for future use
-        await semantic_cache.cache_response(message, response_text)
+        # Save the response to the semantic cache for future use (ONLY if it's general knowledge)
+        if not is_personal:
+            await semantic_cache.cache_response(message, response_text)
+            logger.info("Saved general response to semantic cache.")
+        else:
+            logger.info("Skipped caching because the query was personalized.")
             
         # Save the assistant's final response to the history
         await session_manager.add_to_history(session_id, "assistant", response_text)
