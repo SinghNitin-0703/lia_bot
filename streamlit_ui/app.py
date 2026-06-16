@@ -64,6 +64,7 @@ if not st.session_state["logged_in"]:
                 st.session_state["session_id"] = phone_number.strip()
                 st.session_state["logged_in"] = True
                 st.session_state["messages"] = []
+                print(f"\\n🚨 NEW USER LOGGED IN: {phone_number.strip()} 🚨\\n", flush=True)
                 st.rerun()
             else:
                 st.error("Please enter a valid phone number.")
