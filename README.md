@@ -10,7 +10,7 @@ Welcome to the **Gluzo AI Assistant** repository! This is a state-of-the-art, fu
     *   **Customer Support Agent:** Manages order tracking, returns, and human escalation.
     *   **Skincare Consultation Agent:** Provides personalized routine advice and product layering guides.
 *   **Advanced AI Optimizations:**
-    *   **Prompt Caching:** Optimizes system instructions to significantly reduce LLM latency and token costs via Azure OpenAI.
+    *   **Prompt Caching(Automatecally done by GPT-4.1-mini):** Optimizes system instructions to significantly reduce LLM latency and token costs via Azure OpenAI.
     *   **Semantic Caching:** An in-memory cache mechanism (with future Redis support via RedisVL) that bypasses AI processing for previously answered questions.
 *   **Persistent Memory System:**
     *   **Long-Term Memory:** Extracts and saves user preferences (like skin type and issues) to a SQLite database, providing hyper-personalized future interactions.
@@ -31,20 +31,286 @@ The agents are equipped with specialized tools to perform real-world actions:
 *   **Product Search Tools:** Interfaces with the custom `HybridSearchEngine` to query the vector database and lexical index simultaneously. Can dynamically filter out allergens and apply complex budget math before returning results.
 *   **Customer Support Tools:** Interfaces with the backend to check order statuses, process returns, verify inventory, provide shipping estimates, and gracefully escalate issues to a human agent.
 
-## 🏗️ Architecture
+# 🏗️ Project Architecture
 
-The project consists of two main components:
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                     USER (Browser)                          │
+│              Types / Sends Audio / Image                    │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│         STREAMLIT FRONTEND (Port 8501)                      │
+│         streamlit_ui/app.py                                 │
+│                                                             │
+│  • Login with phone number                                  │
+│  • Chat UI with image & audio upload                        │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+                    HTTP Requests
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│           FASTAPI BACKEND (Port 8000)                       │
+│              gluzo_backend/                                 │
+│                                                             │
+│ routers/chat.py                                             │
+│        │                                                    │
+│        ▼                                                    │
+│ services/chat_service.py                                    │
+│        │                                                    │
+│        ▼                                                    │
+│ ┌───────────────────────────────┐                           │
+│ │      Supervisor Agent         │                           │
+│ │      agents/router.py         │                           │
+│ └───────┬──────────┬────────────┘                           │
+│         │          │                                        │
+│         │          │                                        │
+│         ▼          ▼                  ▼                     │
+│ Product Search  Customer Support  Skincare Consultation     │
+│     Agent            Agent               Agent              │
+│  search.py        support.py      consultation.py           │
+│         │              │                                    │
+│         ▼              ▼                                    │
+│ search_engine.py  support_tools.py                          │
+│ (Vector + BM25)  (escalate_to_human)                        │
+│         │                                                   │
+│         ▼                                                   │
+│  ChromaDB + SQLite                                          │
+│         ▲                                                   │
+│         │                                                   │
+│   data/ (CSV Products)                                      │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ▼
+                🌍 NGROK Public Tunnel
+          (Exposes Streamlit to the Internet)
+```
 
-1.  **FastAPI Backend (`gluzo_backend/`)**
-    *   Powered by [FastAPI](https://fastapi.tiangolo.com/) and Uvicorn.
-    *   Utilizes the **Agno** Agentic AI framework.
-    *   Uses **ChromaDB** for vector storage.
-    *   SQLite database managed via SQLAlchemy for user profiling.
-    *   Fuzzy string matching for caching via RapidFuzz and `cachetools`.
-    *   Automated unit testing using `pytest` within the `tests/` directory.
-2.  **Streamlit Frontend (`streamlit_ui/`)**
-    *   A beautiful, responsive chatbot UI built with [Streamlit](https://streamlit.io/).
-    *   Connects directly to the backend API to stream responses.
+---
+
+## 🤖 There are 3 Sub-Agents + 1 Supervisor Agent = 4 Agents Total
+
+```text
+┌──────────────────────────────────────────────────────────┐
+│              TOTAL AGENTS IN THIS PROJECT                │
+│                                                          │
+│   1 Supervisor Agent  (the boss)                         │
+│   +                                                      │
+│   3 Sub-Agents        (the specialists)                  │
+│   ═══════════════════════════════════════════════════     │
+│   4 Agents Total                                         │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🏗️ Full Agent Map with Tools
+
+```text
+                    ┌──────────────────────────────┐
+                    │    Gluzo_Supervisor_Agent    │
+                    │       (router.py)            │
+                    │                              │
+                    │  Tools:                      │
+                    │  ├── search_products_expert  │
+                    │  ├── customer_support_expert │
+                    │  ├── skincare_consult_expert │
+                    │  ├── update_user_profile     │
+                    │  └── add_to_cart             │
+                    └───────────┬──────────────────┘
+                                │ delegates to
+          ┌─────────────────────┼─────────────────────┐
+          ▼                     ▼                     ▼
+┌──────────────────┐  ┌──────────────────┐  ┌──────────────────────┐
+│ Product_Search   │  │ Customer_Support │  │ Skincare_Consultation│
+│    Agent         │  │    Agent         │  │      Agent           │
+│  (search.py)     │  │  (support.py)    │  │  (consultation.py)   │
+│                  │  │                  │  │                      │
+│  Tools:          │  │  Tools:          │  │  Tools:              │
+│  ├─ match_       │  │  └─ escalate_    │  │  └─ NONE ❌          │
+│  │  product_term │  │     to_human     │  │  (Pure AI advice)    │
+│  ├─ optimize_    │  │                  │  │                      │
+│  │  budget_      │  │                  │  │                      │
+│  │  combinations │  │                  │  │                      │
+│  ├─ find_        │  │                  │  │                      │
+│  │  competitor_  │  │                  │  │                      │
+│  │  alternative  │  │                  │  │                      │
+│  └─ add_to_cart  │  │                  │  │                      │
+└──────────────────┘  └──────────────────┘  └──────────────────────┘
+```
+
+## Components
+
+### 👤 User
+- Interacts through a web browser.
+- Can:
+  - Send text messages
+  - Upload images
+  - Upload audio
+
+---
+
+### 🎨 Frontend (Streamlit)
+
+**Location:** `streamlit_ui/app.py`
+
+Responsibilities:
+- User authentication (phone number login)
+- Chat interface
+- Image upload
+- Audio upload
+- Sends HTTP requests to the backend
+
+Runs on:
+
+```
+http://localhost:8501
+```
+
+---
+
+### ⚙️ Backend (FastAPI)
+
+**Location:** `gluzo_backend/`
+
+Runs on:
+
+```
+http://localhost:8000
+```
+
+Main request flow:
+
+```
+routers/chat.py
+        │
+        ▼
+services/chat_service.py
+        │
+        ▼
+Supervisor Agent
+```
+
+---
+
+## 🤖 Multi-Agent System
+
+The **Supervisor Agent** decides which specialized agent should handle the user's request.
+
+### 1. Product Search Agent
+
+**File**
+
+```
+agents/search.py
+```
+
+Uses:
+
+- `search_engine.py`
+- Vector Search
+- BM25 Search
+
+Database:
+
+- ChromaDB
+- SQLite
+- Product CSV files
+
+---
+
+### 2. Customer Support Agent
+
+**File**
+
+```
+agents/support.py
+```
+
+Uses:
+
+- `support_tools.py`
+- Human escalation
+- Customer support workflows
+
+---
+
+### 3. Skincare Consultation Agent
+
+**File**
+
+```
+agents/consultation.py
+```
+
+Handles:
+
+- Skin-related questions
+- Product recommendations
+- Consultation workflows
+
+---
+
+## 🗄️ Data Layer
+
+Storage components include:
+
+- ChromaDB (Vector Database)
+- SQLite
+- Product CSV files located in:
+
+```
+data/
+```
+
+---
+
+## 🌐 Public Access
+
+The Streamlit application is exposed to the internet using:
+
+```
+NGROK
+```
+
+This creates a secure public URL that forwards traffic to the local Streamlit server.
+
+---
+
+# 🔄 Overall Flow
+
+```text
+User
+   │
+   ▼
+Streamlit UI
+   │
+HTTP Request
+   ▼
+FastAPI Backend
+   │
+Chat Service
+   │
+Supervisor Agent
+   │
+   ├── Product Search Agent
+   ├── Customer Support Agent
+   └── Skincare Consultation Agent
+            │
+            ▼
+     ChromaDB + SQLite
+            │
+            ▼
+        Response
+            │
+            ▼
+       Streamlit UI
+            │
+            ▼
+           User
+```
 
 ## 🚀 Getting Started
 
@@ -118,3 +384,6 @@ Alternatively, you can run the backend and frontend separately:
 
 ---
 *Created by [SinghNitin-0703](https://github.com/SinghNitin-0703)*
+
+
+

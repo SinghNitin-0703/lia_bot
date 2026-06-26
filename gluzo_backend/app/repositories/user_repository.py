@@ -7,17 +7,17 @@ logger = logging.getLogger(__name__)
 
 class UserRepository:
     def __init__(self, db: AsyncSession):
-        """funxtion summary and flow in very short  """
+        
         self.db = db
 
     async def get_by_session_id(self, session_id: str) -> User | None:
-        """funxtion summary and flow in very short  """
+        
         """Fetch a user by their session ID."""
         result = await self.db.execute(select(User).where(User.session_id == session_id))
         return result.scalar_one_or_none()
 
     async def create_user(self, session_id: str) -> User:
-        """funxtion summary and flow in very short  """
+        
         """Create a new user with a given session ID."""
         user = User(session_id=session_id, has_ordered=False)
         self.db.add(user)
@@ -26,7 +26,7 @@ class UserRepository:
         return user
 
     async def get_or_create_user(self, session_id: str) -> User:
-        """funxtion summary and flow in very short  """
+        
         """Fetch a user or create one if they don't exist."""
         try:
             user = await self.get_by_session_id(session_id)
